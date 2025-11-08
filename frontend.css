@@ -1,0 +1,547 @@
+/* Global -------------------------------------------------------------- */
+
+:root {
+    --bg: #050827;
+    --bg-alt: #0b1038;
+    --card-bg: #11163f;
+    --card-soft: #171d4d;
+    --border-subtle: rgba(255, 255, 255, 0.06);
+  
+    --text-main: #f9fbff;
+    --text-muted: #a5b3ff;
+  
+    --pink: #ff7aca;
+    --cyan: #6de0ff;
+    --purple: #a97cff;
+    --mint: #7af8c8;
+    --yellow: #ffd86b;
+  
+    --primary: #6de0ff;
+    --primary-soft: rgba(109, 224, 255, 0.16);
+  
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.4);
+  }
+  
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+      "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #1d275f 0, #050827 42%, #020313 100%);
+    color: var(--text-main);
+  }
+  
+  /* Streamlit body wrapper */
+  body, .stApp {
+    background: transparent;
+  }
+  
+  /* App shell ----------------------------------------------------------- */
+  
+  .app {
+    width: 100%;
+    max-width: 1120px;
+    margin: 16px auto 40px;
+    padding: 0 16px;
+  }
+  
+  .card {
+    background: radial-gradient(circle at top left, #1a2055 0, #050827 65%);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(132, 154, 255, 0.25);
+    box-shadow: var(--shadow-soft);
+    padding: 28px 30px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* soft glow overlay */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -60%;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(255, 122, 202, 0.14) 0, transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(109, 224, 255, 0.16) 0, transparent 45%);
+    pointer-events: none;
+  }
+  
+  /* Keep content above gradient overlay */
+  .card > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Typography ---------------------------------------------------------- */
+  
+  h1 {
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: -0.04em;
+  }
+  
+  .tagline {
+    margin: 0 0 22px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  
+  /* Pills / selections -------------------------------------------------- */
+  
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  
+  .pill {
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(144, 160, 255, 0.45);
+    font-size: 13px;
+    cursor: pointer;
+    background: rgba(10, 16, 56, 0.9);
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+    transition: background 0.2s, border-color 0.2s, transform 0.06s,
+      box-shadow 0.2s, color 0.2s;
+  }
+  
+  .pill span.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid var(--cyan);
+  }
+  
+  .pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45);
+  }
+  
+  .pill.active {
+    background: linear-gradient(135deg, rgba(109, 224, 255, 0.24), rgba(169, 124, 255, 0.3));
+    border-color: var(--primary);
+  }
+  
+  .pill.active span.dot {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+  
+  /* Grid + form controls ------------------------------------------------ */
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  select {
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    font-size: 14px;
+    background: rgba(9, 13, 53, 0.95);
+    color: var(--text-main);
+    outline: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--cyan) 50%),
+      linear-gradient(135deg, var(--cyan) 50%, transparent 50%);
+    background-position: calc(100% - 14px) calc(50% - 2px), calc(100% - 10px) calc(50% - 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+  }
+  
+  select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px rgba(109, 224, 255, 0.35);
+  }
+  
+  /* Mode row ------------------------------------------------------------ */
+  
+  .mode-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 24px;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  
+  .mode-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-main);
+  }
+  
+  .radio {
+    width: 15px;
+    height: 15px;
+    border-radius: 999px;
+    border: 2px solid rgba(164, 179, 255, 0.7);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .radio-inner {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: transparent;
+  }
+  
+  .mode-option.active .radio {
+    border-color: var(--primary);
+  }
+  
+  .mode-option.active .radio-inner {
+    background: var(--primary);
+  }
+  
+  /* Primary button ------------------------------------------------------ */
+  
+  .btn-primary {
+    padding: 11px 26px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #050827;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6);
+    transition: transform 0.06s ease-out, box-shadow 0.15s ease-out,
+      filter 0.15s;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+  }
+  
+  .footer-hint {
+    margin-top: 15px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  /* Interview screen ---------------------------------------------------- */
+  
+  .hidden {
+    display: none;
+  }
+  
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  
+  .logo-small {
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    font-size: 18px;
+  }
+  
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  
+  .dot-separator {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(165, 179, 255, 0.8);
+  }
+  
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.18fr) minmax(0, 1.05fr);
+    gap: 22px;
+    margin-top: 10px;
+  }
+  
+  /* Question / answer cards -------------------------------------------- */
+  
+  .q-card,
+  .answer-card,
+  .feedback-card,
+  .camera-card {
+    border-radius: 18px;
+    border: 1px solid var(--border-subtle);
+    background: radial-gradient(circle at 0 0, rgba(109, 224, 255, 0.08) 0, transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(255, 122, 202, 0.08) 0, transparent 50%),
+      var(--card-soft);
+    padding: 15px 16px 17px;
+  }
+  
+  .q-title-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  
+  .question-text {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 11px;
+  }
+  
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 11px;
+  }
+  
+  .tag {
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(23, 32, 92, 0.9);
+    color: var(--text-main);
+    border: 1px solid rgba(129, 140, 248, 0.8);
+  }
+  
+  /* Answer input -------------------------------------------------------- */
+  
+  textarea {
+    width: 100%;
+    min-height: 150px;
+    resize: vertical;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    background: rgba(6, 10, 50, 0.95);
+    color: var(--text-main);
+  }
+  
+  textarea::placeholder {
+    color: rgba(165, 179, 255, 0.7);
+  }
+  
+  textarea:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 1px rgba(109, 224, 255, 0.35);
+  }
+  
+  /* Answer footer ------------------------------------------------------- */
+  
+  .answer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    gap: 12px;
+  }
+  
+  .answer-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Small button -------------------------------------------------------- */
+  
+  .btn-small {
+    font-size: 13px;
+    border-radius: 999px;
+    padding: 7px 14px;
+    border: 1px solid rgba(129, 140, 248, 0.9);
+    background: radial-gradient(circle at 0 0, rgba(109, 224, 255, 0.2) 0, transparent 55%),
+      rgba(9, 13, 53, 0.95);
+    color: var(--cyan);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.06s, box-shadow 0.15s;
+  }
+  
+  .btn-small:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+  }
+  
+  /* Feedback + scoring -------------------------------------------------- */
+  
+  .feedback-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .score-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  
+  .score-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .score-label {
+    width: 70px;
+    color: var(--text-muted);
+  }
+  
+  .score-bar-bg {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(17, 24, 65, 0.9);
+    overflow: hidden;
+  }
+  
+  .score-bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--mint), var(--cyan), var(--purple));
+    width: 0%;
+    transition: width 0.3s ease-out;
+  }
+  
+  .feedback-text {
+    font-size: 12px;
+    color: var(--text-main);
+  }
+  
+  .mt-12 {
+    margin-top: 12px;
+  }
+  
+  /* Mic button ---------------------------------------------------------- */
+  
+  .mic-btn {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 255, 0.9);
+    background: radial-gradient(circle at 0 0, rgba(255, 216, 107, 0.22) 0, transparent 55%),
+      rgba(13, 18, 60, 0.96);
+    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+  
+  .mic-btn span.icon {
+    font-size: 15px;
+  }
+  
+  .mic-btn.recording {
+    background: radial-gradient(circle at 0 0, rgba(255, 122, 122, 0.3) 0, transparent 55%),
+      rgba(36, 10, 36, 0.96);
+    border-color: #f97373;
+    color: #fecaca;
+    box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.5);
+  }
+  
+  /* Camera card --------------------------------------------------------- */
+  
+  .camera-wrapper {
+    margin-top: 8px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid rgba(148, 163, 255, 0.55);
+  }
+  
+  video {
+    width: 100%;
+    display: block;
+  }
+  
+  .camera-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .camera-btn {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 255, 0.9);
+    background: rgba(9, 13, 53, 0.96);
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--cyan);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  
+  .camera-btn.active {
+    border-color: #4ade80;
+    color: #bbf7d0;
+    background: radial-gradient(circle at 0 0, rgba(122, 248, 200, 0.22) 0, transparent 55%),
+      rgba(11, 32, 40, 0.96);
+  }
+  
+  /* Responsive ---------------------------------------------------------- */
+  
+  @media (max-width: 780px) {
+    .card {
+      padding: 20px 18px 22px;
+    }
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
