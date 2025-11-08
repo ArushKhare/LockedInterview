@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LockedInterview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#f9fafb; --card-bg:#ffffff; --border:#e5e7eb; --primary:#2563eb; --primary-soft:#dbeafe; --text-main:#0f172a; --text-muted:#6b7280; --shadow:0 10px 30px rgba(15,23,42,.08); --radius-lg:16px; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#e0f2fe 0,#f9fafb 45%);color:var(--text-main);min-height:100vh;display:flex;align-items:stretch;justify-content:center}
+    .app{width:100%;max-width:1000px;padding:32px 24px 40px}
+    .card{background:var(--card-bg);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);padding:28px 32px 32px}
+    h1{font-size:26px;margin:0 0 4px;letter-spacing:-.03em}
+    .tagline{margin:0 0 24px;color:var(--text-muted);font-size:14px}
+    .pill-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+    .pill{padding:10px 18px;border-radius:999px;border:1px solid var(--border);font-size:14px;cursor:pointer;background:#f9fafb;color:var(--text-main);display:inline-flex;align-items:center;gap:8px;transition:background .15s,border-color .15s,box-shadow .15s,transform .05s}
+    .pill span.dot{width:8px;height:8px;border-radius:999px;background:transparent;border:1px solid #cbd5f5}
+    .pill.active{background:var(--primary-soft);border-color:var(--primary);box-shadow:0 0 0 1px rgba(37,99,235,.3)}
+    .pill.active span.dot{background:var(--primary);border-color:var(--primary)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:16px}
+    label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text-muted)}
+    select{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--border);font-size:14px;background:#f9fafb;outline:none}
+    select:focus{border-color:var(--primary);box-shadow:0 0 0 1px rgba(37,99,235,.25);background:#fff}
+    .btn-primary{padding:11px 26px;border-radius:999px;border:none;background:var(--primary);color:#fff;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 12px 25px rgba(37,99,235,.35);transition:transform .05s,box-shadow .15s,background .15s}
+    .btn-primary:hover{background:#1d4ed8;box-shadow:0 16px 30px rgba(30,64,175,.45);transform:translateY(-1px)}
+    .btn-small{font-size:13px;border-radius:999px;padding:7px 14px;border:1px solid var(--primary);background:#eff6ff;color:#1d4ed8;cursor:pointer}
+    .hidden { display: none !important; }
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .logo-small{font-weight:700;letter-spacing:-.03em}
+    .topbar-right{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text-muted)}
+    .dot-separator{width:4px;height:4px;border-radius:999px;background:#cbd5e1}
+    .layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.1fr);gap:24px;margin-top:12px}
+    .q-card,.answer-card,.feedback-card,.camera-card{border:1px solid var(--border);border-radius:14px;background:#f9fafb;padding:16px 18px 18px}
+    .q-title-label{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:6px}
+    .question-text{font-size:15px;font-weight:500;margin-bottom:10px}
+    .tag-row{display:flex;flex-wrap:wrap;gap:6px;font-size:11px}
+    .tag{padding:3px 7px;border-radius:999px;background:#e5e7eb;color:#374151}
+    textarea{width:100%;min-height:140px;resize:vertical;padding:10px 12px;border-radius:10px;border:1px solid var(--border);font-family:inherit;font-size:14px;outline:none;background:#fff}
+    textarea:focus{border-color:var(--primary);box-shadow:0 0 0 1px rgba(37,99,235,.25)}
+    .answer-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:var(--text-muted);gap:12px}
+    .answer-footer-right{display:flex;align-items:center;gap:8px}
+    .score-row{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;font-size:12px}
+    .score-line{display:flex;align-items:center;gap:8px}
+    .score-label{width:70px;color:var(--text-muted)}
+    .score-bar-bg{flex:1;height:6px;border-radius:999px;background:#e5e7eb;overflow:hidden}
+    .score-bar-fill{height:100%;border-radius:inherit;background:#22c55e;width:0%;transition:width .3s ease-out}
+    .feedback-text{font-size:12px;color:var(--text-main);white-space:pre-wrap}
+    .diag{margin-top:8px;font-size:12px;color:var(--text-muted)}
+    /* summary modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .modal{background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);max-width:560px;width:92%;padding:20px}
+    .modal h3{margin:0 0 10px}
+    .modal p{margin:8px 0}
+    @media (max-width:780px){.card{padding:20px 18px 22px}.layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- HOME -->
+    <div id="home-screen" class="card">
+      <h1>LockedInterview</h1>
+      <p class="tagline">Pick your role, seniority level, and interview type. You’ll get 5 questions.</p>
+
+      <div class="grid">
+        <div><label for="role">Role</label>
+          <select id="role">
+            <option>SWE</option>
+            <option>Data Analyst</option>
+            <option>Consultant</option>
+            <option>Product Manager</option>
+          </select>
+        </div>
+        <div><label for="level">Level (difficulty)</label>
+          <select id="level">
+            <option>Intern</option>
+            <option>New Grad</option>
+            <option>Intermediate</option>
+            <option>Senior</option>
+          </select>
+        </div>
+      </div>
+
+      <label style="margin-bottom:6px;font-size:13px;color:var(--text-muted);">Type</label>
+      <div class="pill-row" id="type-row">
+        <button class="pill active" data-type="behavioral"><span class="dot"></span> Behavioral</button>
+        <button class="pill" data-type="technical"><span class="dot"></span> Technical</button>
+      </div>
+
+      <button class="btn-primary" id="start-btn">Start (5 questions) →</button>
+      <p class="diag" id="mic-diag">Tip: open via <b>http://localhost</b> (not 127.0.0.1) for mic/camera permissions.</p>
+      <div id="last-summary" class="diag hidden"></div>
+    </div>
+
+    <!-- INTERVIEW -->
+    <div id="interview-screen" class="card hidden">
+      <div class="topbar">
+        <div class="logo-small">LockedInterview</div>
+        <div class="topbar-right">
+          <span id="progress-label">Q 1 / 5</span><span class="dot-separator"></span>
+          <span id="type-label">Behavioral</span>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <div class="q-card">
+            <div class="q-title-label">Question</div>
+            <div id="question-text" class="question-text"></div>
+            <div id="tag-row" class="tag-row"></div>
+            <div id="meta-row" class="tag-row"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="answer-card">
+            <div class="q-title-label">Your answer</div>
+            <textarea id="answer-input" placeholder="Speak with the mic or type here..."></textarea>
+            <div class="answer-footer">
+              <span id="word-count">0 words</span>
+              <div class="answer-footer-right">
+                <button id="mic-btn" class="btn-small">🎙️ Mic</button>
+                <button id="submit-answer" class="btn-small">Submit</button>
+                <button id="regen-question" class="btn-small" title="Different phrasing">Regenerate</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="feedback-card" class="feedback-card hidden" style="margin-top:12px;">
+            <div class="q-title-label">Feedback</div>
+            <div class="score-row">
+              <div class="score-line"><span class="score-label">Structure</span><div class="score-bar-bg"><div id="score-structure" class="score-bar-fill"></div></div><span id="score-structure-label">0/10</span></div>
+              <div class="score-line"><span class="score-label">Clarity</span><div class="score-bar-bg"><div id="score-clarity" class="score-bar-fill"></div></div><span id="score-clarity-label">0/10</span></div>
+              <div class="score-line"><span class="score-label">Impact</span><div class="score-bar-bg"><div id="score-impact" class="score-bar-fill"></div></div><span id="score-impact-label">0/10</span></div>
+            </div>
+            <div id="feedback-text" class="feedback-text"></div>
+            <div class="answer-footer" style="margin-top:8px;">
+              <button id="next-question" class="btn-small">Next →</button>
+            </div>
+          </div>
+
+          <div class="camera-card" style="margin-top:12px;">
+            <div class="q-title-label">Camera</div>
+            <div class="tag-row"><span id="camera-status" class="tag">Off</span></div>
+            <div style="border-radius:12px;overflow:hidden;background:#000;margin-top:8px;"><video id="camera-video" autoplay muted playsinline></video></div>
+            <div class="answer-footer" style="margin-top:8px;justify-content:flex-end;">
+              <button id="camera-btn" class="btn-small">Start camera</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY MODAL (starts hidden) -->
+    <div id="summary-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+      <div class="modal">
+        <h3 id="summary-title">Session Summary (5 questions)</h3>
+        <p id="summary-lines"></p>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;">
+          <button id="summary-close" class="btn-small" type="button">Back to start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== CONFIG ======
+    const API_BASE = "http://127.0.0.1:8000";
+    const TOTAL = 5;
+    
+
+    // ====== GLOBAL STATE ======
+    let SESSION_ID = null;
+    let CURRENT_QUESTION = null;
+    let questionCounter = 0;
+    let currentType = "behavioral";
+    const lastScores = []; // {structure, clarity, impact}
+
+    // ====== DOM SHORTCUTS ======
+    const $ = (id) => document.getElementById(id);
+    const homeScreen = $("home-screen");
+    const interviewScreen = $("interview-screen");
+    const startBtn = $("start-btn");
+    const roleSel = $("role");
+    const levelSel = $("level");
+    const typeRow = $("type-row");
+    const typeLabel = $("type-label");
+    const progressLabel = $("progress-label");
+    const questionText = $("question-text");
+    const tagRow = $("tag-row");
+    const metaRow = $("meta-row");
+    const answerInput = $("answer-input");
+    const wordCount = $("word-count");
+    const feedbackCard = $("feedback-card");
+    const scoreStructure = $("score-structure");
+    const scoreClarity = $("score-clarity");
+    const scoreImpact = $("score-impact");
+    const scoreStructureLabel = $("score-structure-label");
+    const scoreClarityLabel = $("score-clarity-label");
+    const scoreImpactLabel = $("score-impact-label");
+    const feedbackText = $("feedback-text");
+    const nextQuestionBtn = $("next-question");
+    const submitAnswerBtn = $("submit-answer");
+    const regenBtn = $("regen-question");
+    const micBtn = $("mic-btn");
+    const micDiag = $("mic-diag");
+    const cameraBtn = $("camera-btn");
+    const cameraStatus = $("camera-status");
+    const cameraVideo = $("camera-video");
+    const lastSummary = $("last-summary");
+    const summaryBackdrop = $("summary-backdrop");
+    const summaryLines = $("summary-lines");
+    const summaryClose = $("summary-close");
+
+    // ====== SMALL HELPERS ======
+    function show(el){ if(!el) return; el.classList.remove("hidden"); el.style.display = ""; }
+    function hide(el){ if(!el) return; el.classList.add("hidden"); el.style.display = "none"; }
+
+    function resetUIToHome() {
+      hide(summaryBackdrop);
+      hide(interviewScreen);
+      show(homeScreen);
+      SESSION_ID = null;
+      CURRENT_QUESTION = null;
+      questionCounter = 0;
+      lastScores.length = 0;
+      if (answerInput) answerInput.value = "";
+      updateWordCount();
+    }
+
+    function setBar(el, labelEl, val) {
+      const v = Math.max(0, Math.min(10, Number(val||0)));
+      el.style.width = `${v*10}%`;
+      labelEl.textContent = `${v}/10`;
+    }
+    function updateWordCount() {
+      const words = (answerInput?.value || "").trim().split(/\s+/).filter(Boolean);
+      if (wordCount) wordCount.textContent = `${words.length} word${words.length===1?"":"s"}`;
+    }
+    function renderQuestion(q) {
+      questionText.textContent = q.text || "";
+      tagRow.innerHTML = "";
+      (q.tags || []).forEach(t => {
+        const s = document.createElement("span");
+        s.className = "tag"; s.textContent = t; tagRow.appendChild(s);
+      });
+      metaRow.innerHTML = "";
+      const md = q.metadata || {};
+      if (md.level) { const s=document.createElement("span"); s.className="tag"; s.textContent=`Level: ${md.level}`; metaRow.appendChild(s); }
+      if (md.category) { const s=document.createElement("span"); s.className="tag"; s.textContent=`Category: ${md.category}`; metaRow.appendChild(s); }
+      progressLabel.textContent = `Q ${questionCounter} / ${TOTAL}`;
+      answerInput.value = ""; updateWordCount();
+      hide(feedbackCard);
+      setBar(scoreStructure, scoreStructureLabel, 0);
+      setBar(scoreClarity, scoreClarityLabel, 0);
+      setBar(scoreImpact, scoreImpactLabel, 0);
+      feedbackText.textContent = "";
+    }
+    async function readNDJSON(res,onLine){
+      const reader=res.body.getReader(); const decoder=new TextDecoder(); let buf="";
+      while(true){ const {value,done}=await reader.read(); if(done)break;
+        buf+=decoder.decode(value,{stream:true}); const lines=buf.split("\n"); buf=lines.pop()??"";
+        for(const line of lines){ const s=line.trim(); if(!s)continue; try{onLine(JSON.parse(s));}catch(e){console.warn("Bad NDJSON:",s);} }
+      }
+    }
+    function coerceToValidJSON(assembled){
+      let s=(assembled||"").trim(); if(!s) throw new Error("Empty stream");
+      if(!s.startsWith("{")) s = `{"structure": ${s}`;
+      s = s.replace(/\s+([,:}\]])/g,"$1");
+      if(!s.endsWith("}")) s += "}";
+      return s;
+    }
+
+    // ====== TYPE TOGGLE ======
+    typeRow.addEventListener("click", (e)=>{
+      const btn = e.target.closest(".pill"); if(!btn) return;
+      [...typeRow.children].forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      currentType = btn.dataset.type;
+    });
+
+    // ====== API ======
+    async function startSession(){
+      const body = { role: roleSel.value, level: levelSel.value, type: currentType, totalQuestions: TOTAL };
+      const resp = await fetch(`${API_BASE}/session/start`, {
+        method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body)
+      });
+      if(!resp.ok) throw new Error(`startSession ${resp.status}`);
+      const data = await resp.json();
+      SESSION_ID = data.sessionId;
+      return data;
+    }
+    async function fetchNextQuestion(){
+      const resp = await fetch(`${API_BASE}/session/${SESSION_ID}/next-question`, { cache: "no-store" });
+      if(!resp.ok) throw new Error(`next-question ${resp.status}`);
+      const q = await resp.json();
+      CURRENT_QUESTION = q; return q;
+    }
+    async function scoreBehavioralStream(questionId, answerText){
+      const resp = await fetch(`${API_BASE}/score/behavioral/stream`, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ sessionId: SESSION_ID || "local", questionId, answerText })
+      });
+      if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      let assembled=""; let backendError=null;
+      await readNDJSON(resp, (obj)=>{ if(obj.delta!=null) assembled+=String(obj.delta); if(obj.error) backendError=obj.error; });
+      if(backendError) console.warn(backendError);
+      try { return JSON.parse(assembled); } catch{
+        const fixed = coerceToValidJSON(assembled); return JSON.parse(fixed);
+      }
+    }
+
+    // ====== EVENT WIRING AFTER DOM READY ======
+    document.addEventListener("DOMContentLoaded", () => {
+      hide(summaryBackdrop); show(homeScreen); hide(interviewScreen);
+
+      // Start session
+      startBtn.addEventListener("click", async ()=>{
+        try{
+          startBtn.disabled = true;
+          lastScores.length = 0;
+          const start = await startSession();
+          $("type-label").textContent = currentType === "technical" ? "Technical" : "Behavioral";
+          const q = await fetchNextQuestion();
+          questionCounter = 1;
+          hide(homeScreen); show(interviewScreen);
+          renderQuestion(q);
+        }catch(e){ alert("Failed to start session. Check server logs."); console.error(e); }
+        finally{ startBtn.disabled = false; }
+      });
+
+      // Submit → score
+      submitAnswerBtn.addEventListener("click", async ()=>{
+        const text = answerInput.value.trim();
+        if(!text){ alert("Write an answer first (use mic or type)."); return; }
+        submitAnswerBtn.disabled = true; show(feedbackCard); feedbackText.textContent = "Scoring…";
+        try{
+          const result = await scoreBehavioralStream(CURRENT_QUESTION?.questionId||"q1", text);
+          const { structure, clarity, impact, summary, bullets } = result || {};
+          setBar(scoreStructure, scoreStructureLabel, structure);
+          setBar(scoreClarity, scoreClarityLabel, clarity);
+          setBar(scoreImpact, scoreImpactLabel, impact);
+          feedbackText.textContent = summary || (Array.isArray(bullets) ? bullets.join(" ") : "");
+          lastScores.push({structure:Number(structure||0), clarity:Number(clarity||0), impact:Number(impact||0)});
+        }catch(e){ console.error(e); feedbackText.textContent = "Scoring failed. See console."; }
+        finally{ submitAnswerBtn.disabled = false; }
+      });
+
+      // Next or Summary
+      nextQuestionBtn.addEventListener("click", async ()=>{
+        if(questionCounter >= TOTAL){
+          const avg = (arr, key)=> Math.round(arr.reduce((s,x)=>s+(x[key]||0),0) / Math.max(arr.length,1));
+          const aS = avg(lastScores,"structure"), aC = avg(lastScores,"clarity"), aI = avg(lastScores,"impact");
+          const overall = Math.round((aS + aC + aI) / 3);
+          const verdict = overall >= 8 ? "Excellent signal—keep polishing examples."
+                        : overall >= 6 ? "Solid—tighten specifics and add metrics."
+                        : overall >= 4 ? "Mixed—practice STAR framing and quantify outcomes."
+                        : "Needs work—focus on clarity, ownership, and measurable results.";
+          summaryLines.innerHTML =
+            `Structure: <b>${aS}/10</b><br>` +
+            `Clarity: <b>${aC}/10</b><br>` +
+            `Impact: <b>${aI}/10</b><br>` +
+            `Overall: <b>${overall}/10</b><br><br>${verdict}`;
+          show(summaryBackdrop);
+          return;
+        }
+        try{
+          const q = await fetchNextQuestion();
+          questionCounter += 1;
+          renderQuestion(q);
+        }catch(e){ console.error(e); alert("Could not load next question."); }
+      });
+
+      // Summary close → back to start
+      summaryClose.addEventListener("click", (e)=>{ e.preventDefault(); resetUIToHome(); });
+      summaryBackdrop.addEventListener("click", (e)=>{ if(e.target === summaryBackdrop){ resetUIToHome(); } });
+      document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && !summaryBackdrop.classList.contains("hidden")) resetUIToHome(); });
+
+      // Regenerate (same index)
+      regenBtn.addEventListener("click", async ()=>{
+        try{ const q = await fetchNextQuestion(); renderQuestion(q); }
+        catch(e){ console.error(e); alert("Could not regenerate question."); }
+      });
+
+      // Word count
+      answerInput.addEventListener("input", updateWordCount); updateWordCount();
+
+      // ======= Mic: Web Speech (fallback: /speech/transcribe) =======
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition=null, listening=false, finalTranscript="";
+      let mediaRecorder=null, mediaChunks=[], usingFallback=false;
+
+      function setMicDiag(msg){ if(micDiag) micDiag.textContent = msg; }
+      function setupWebSpeech(){
+        recognition = new SpeechRecognition();
+        recognition.continuous = true; recognition.interimResults = true; recognition.lang = "en-US";
+        recognition.onstart = ()=>{ listening=true; micBtn.classList.add("recording"); micBtn.textContent="🎙️ Listening…"; setMicDiag("Web Speech active."); };
+        recognition.onend = ()=>{ listening=false; micBtn.classList.remove("recording"); micBtn.textContent="🎙️ Mic"; };
+        recognition.onerror = (e)=>{ console.error("Speech error:", e.error); setMicDiag(`Speech error: ${e.error}`); };
+        recognition.onresult = (evt)=>{
+          let interim=""; for(let i=evt.resultIndex;i<evt.results.length;i++){ const r=evt.results[i]; const t=r[0].transcript;
+            if(r.isFinal) finalTranscript += t + " "; else interim += t;
+          }
+          answerInput.value = (finalTranscript + interim).trim(); updateWordCount();
+        };
+      }
+      async function startFallbackRecorder(){
+        try{
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaChunks = [];
+          mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+          mediaRecorder.ondataavailable = (e)=>{ if(e.data.size>0) mediaChunks.push(e.data); };
+          mediaRecorder.onstart = ()=>{ micBtn.classList.add("recording"); micBtn.textContent="🎙️ Recording…"; setMicDiag("Recording… Click again to stop."); };
+          mediaRecorder.onstop = async ()=>{
+            micBtn.classList.remove("recording"); micBtn.textContent="🎙️ Mic";
+            const blob = new Blob(mediaChunks, { type: "audio/webm" });
+            try{
+              const form = new FormData(); form.append("file", blob, "speech.webm");
+              const resp = await fetch(`${API_BASE}/speech/transcribe`, { method:"POST", body: form });
+              if(!resp.ok){
+                const txt = await resp.text();
+                if (resp.status === 501) setMicDiag("Transcription disabled: set OPENAI_API_KEY to enable Whisper.");
+                else setMicDiag(`Transcribe ${resp.status}: ${txt}`);
+                throw new Error(`Transcribe ${resp.status}: ${txt}`);
+              }
+              const { text } = await resp.json();
+              answerInput.value = (answerInput.value + " " + (text || "")).trim(); updateWordCount();
+              setMicDiag("Transcription complete.");
+            }catch(err){ console.error(err); setMicDiag("Transcription failed. Check backend/API key."); }
+            stream.getTracks().forEach(t=>t.stop());
+          };
+          mediaRecorder.start();
+        }catch(err){
+          console.error("getUserMedia error:", err);
+          setMicDiag("Mic permission denied or unavailable.");
+        }
+      }
+      (function initMic(){
+        const onLocalhost = location.hostname === "localhost" || location.hostname.endsWith(".localhost");
+        if(!onLocalhost){ setMicDiag("Open via http://localhost for mic access."); }
+        if(SpeechRecognition){
+          usingFallback = false; setupWebSpeech(); setMicDiag("Mic ready (Web Speech).");
+        }else if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+          usingFallback = true; setMicDiag("Web Speech unavailable. Using recorder → /speech/transcribe.");
+        }else{
+          micBtn.disabled=true; micBtn.style.opacity=.5; setMicDiag("No Web Speech or MediaRecorder available.");
+        }
+      })();
+      micBtn.addEventListener("click", async ()=>{
+        if(usingFallback){
+          if(mediaRecorder && mediaRecorder.state === "recording"){ mediaRecorder.stop(); }
+          else{ await startFallbackRecorder(); }
+          return;
+        }
+        if(!recognition) return;
+        if(!listening){ finalTranscript = answerInput.value ? (answerInput.value + " ") : ""; recognition.start(); }
+        else{ recognition.stop(); }
+      });
+
+      // ======= Camera =======
+      let cameraStream=null;
+      cameraBtn.addEventListener("click", async ()=>{
+        if(!navigator.mediaDevices?.getUserMedia){ alert("Camera not supported."); return; }
+        if(!cameraStream){
+          try{ const s=await navigator.mediaDevices.getUserMedia({video:true,audio:false}); cameraStream=s; cameraVideo.srcObject=s; cameraStatus.textContent="On"; cameraBtn.textContent="Stop camera"; }
+          catch(err){ console.error("Camera error:", err); cameraStatus.textContent="Blocked"; }
+        }else{
+          cameraStream.getTracks().forEach(t=>t.stop()); cameraStream=null; cameraVideo.srcObject=null; cameraStatus.textContent="Off"; cameraBtn.textContent="Start camera";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
