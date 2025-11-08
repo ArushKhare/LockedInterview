@@ -2,7 +2,6 @@ import os
 import json
 import modal
 import requests
-import random
 
 app = modal.App("text-analyzer")
 
